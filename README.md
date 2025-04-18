@@ -1,2 +1,2 @@
-# Mr DigiFoot
-Mr DigiFoot Website, links in bio for social networks
+# Mr DigiLink
+Mr DigiLink Website, links in bio for social networks
