@@ -1,0 +1,8 @@
+BLEU 1a73e8
+VERT 30a34f
+JAUNE fbbd09
+ROUGE de3529
+VIOLET 9e1bce
+
+
+url pour les icons : https://icon-sets.iconify.design/fa6-brands/
