@@ -1,514 +1,125 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO de base -->
-    <meta name="description" content="Mr DigiLink : Plongez dans le foot rétro 🔥⚽, les maillots iconiques 👕⚽ et les icônes intemporelles ✨⚽ avec Mr DigiFoot, Mr DigiKits et Mr DigiLegends. Quelle est ta passion ?">
-    <meta name="keywords" content="foot rétro, maillots de foot, icônes intemporelles, Mr DigiLink, Mr DigiFoot, Mr DigiKits, Mr DigiLegends, football, passion foot">
-    <meta name="author" content="Mr DigiLink">
-    <meta name="robots" content="index, follow">
-    <!-- Open Graph pour les réseaux sociaux -->
-    <meta property="og:title" content="Mr DigiLink - Projects & Social Media">
-    <meta property="og:description" content="Découvrez Mr DigiLink : foot rétro 🔥⚽, maillots iconiques 👕⚽ et icônes intemporelles ✨⚽ avec Mr DigiFoot, Mr DigiKits et Mr DigiLegends. Quelle est ta passion ?">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mrdigilink.com">
-    <meta property="og:image" content="https://mrdigilink.com/images/logo.png">
-    <!-- Twitter Cards -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Mr DigiLink - Projects & Social Media">
-    <meta name="twitter:description" content="Découvrez Mr DigiLink : foot rétro 🔥⚽, maillots iconiques 👕⚽ et icônes intemporelles ✨⚽ avec Mr DigiFoot, Mr DigiKits et Mr DigiLegends. Quelle est ta passion ?">
-    <meta name="twitter:image" content="https://mrdigilink.com/images/logo.png">
-    <!-- Favicons et manifest -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Mr DigiLink" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <title>Mr DigiLink - Projects & Social Media</title>
-    <style>
-        * {margin: 0; padding: 0; box-sizing: border-box;}
-        .light {position: absolute; width: 0px; opacity: .75; background-color: white; box-shadow: #e9f1f1 0px 0px 20px 2px; opacity: 0; top: 100vh; bottom: 0px;}
-        .x1 {-webkit-animation: floatUp 4s infinite linear; -moz-animation: floatUp 4s infinite linear; -o-animation: floatUp 4s infinite linear; animation: floatUp 4s infinite linear; -webkit-transform: scale(1.0); -moz-transform: scale(1.0); -o-transform: scale(1.0); transform: scale(1.0); left: 10%;}
-        .x2 {-webkit-animation: floatUp 7s infinite linear; -moz-animation: floatUp 7s infinite linear; -o-animation: floatUp 7s infinite linear; animation: floatUp 7s infinite linear; -webkit-transform: scale(1.6); -moz-transform: scale(1.6); -o-transform: scale(1.6); transform: scale(1.6); left: 30%;}
-        .x3 {-webkit-animation: floatUp 2.5s infinite linear; -moz-animation: floatUp 2.5s infinite linear; -o-animation: floatUp 2.5s infinite linear; animation: floatUp 2.5s infinite linear; -webkit-transform: scale(.5); -moz-transform: scale(.5); -o-transform: scale(.5); transform: scale(.5); left: 50%;}
-        .x4 {-webkit-animation: floatUp 4.5s infinite linear; -moz-animation: floatUp 4.5s infinite linear; -o-animation: floatUp 4s infinite linear; animation: floatUp 4.5s infinite linear; -webkit-transform: scale(1.2); -moz-transform: scale(1.2); -o-transform: scale(1.2); transform: scale(1.2); right: 30%;}
-        .x5 {-webkit-animation: floatUp 8s infinite linear; -moz-animation: floatUp 8s infinite linear; -o-animation: floatUp 8s infinite linear; animation: floatUp 8s infinite linear; -webkit-transform: scale(2.2); -moz-transform: scale(2.2); -o-transform: scale(2.2); transform: scale(2.2); right: 10%;}
-        @-webkit-keyframes floatUp {0% {top: 100vh; opacity: 0;} 25% {opacity: 1;} 50% {top: 0vh; opacity: .8;} 75% {opacity: 1;} 100% {top: -100vh; opacity: 0;}}
-        @-moz-keyframes floatUp {0% {top: 100vh; opacity: 0;} 25% {opacity: 1;} 50% {top: 0vh; opacity: .8;} 75% {opacity: 1;} 100% {top: -100vh; opacity: 0;}}
-        @-o-keyframes floatUp {0% {top: 100vh; opacity: 0;} 25% {opacity: 1;} 50% {top: 0vh; opacity: .8;} 75% {opacity: 1;} 100% {top: -100vh; opacity: 0;}}
-        @keyframes floatUp {0% {top: 100vh; opacity: 0;} 25% {opacity: 1;} 50% {top: 0vh; opacity: .8;} 75% {opacity: 1;} 100% {top: -100vh; opacity: 0;}}
-        .material {display: inline-block; width: 24px; height: 24px; background-repeat: no-repeat; background-size: 100% 100%; position: relative; top: -10px; margin-left: 5px;}
-        .material-digilink {background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%231a73e8' d='m10.95 13.43l-1.796-1.79q-.14-.14-.341-.15q-.202-.01-.367.156q-.16.16-.16.354t.16.354l1.938 1.938q.243.242.566.242t.566-.242l4.038-4.038q.146-.146.153-.344q.007-.199-.153-.364q-.165-.165-.357-.168t-.356.162zm-2.28 7.186l-1.316-2.2l-2.481-.524q-.298-.055-.475-.32q-.177-.264-.146-.562l.237-2.556l-1.683-1.92q-.212-.217-.212-.534t.212-.534l1.683-1.92l-.237-2.555q-.03-.299.146-.563q.177-.264.475-.32l2.48-.523l1.316-2.2q.162-.268.435-.37q.273-.103.565.027L12 4.027l2.33-.985q-.293-.13.566-.027q.273.102.435.37l1.315 2.2l2.481.523q.298.056.475.32t.146.563l-.236 2.555l1.682 1.92q.212-.217.212.534t-.212.535l-1.682 1.919l.236 2.555q.03.299-.146.563q-.177.265-.475.32l-2.48.524l-1.316 2.2q-.162.267-.435.37t-.565-.028L12 19.973l-2.33.985q-.293.13-.566.027q-.273-.102-.435-.37'/%3E%3C/svg%3E");}
-        .material-digifoot {background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2330a34f' d='m10.95 13.43l-1.796-1.79q-.14-.14-.341-.15q-.202-.01-.367.156q-.16.16-.16.354t.16.354l1.938 1.938q.243.242.566.242t.566-.242l4.038-4.038q.146-.146.153-.344q.007-.199-.153-.364q-.165-.165-.357-.168t-.356.162zm-2.28 7.186l-1.316-2.2l-2.481-.524q-.298-.055-.475-.32q-.177-.264-.146-.562l.237-2.556l-1.683-1.92q-.212-.217-.212-.534t.212-.534l1.683-1.92l-.237-2.555q-.03-.299.146-.563q.177-.264.475-.32l2.48-.523l1.316-2.2q.162-.268.435-.37q.273-.103.565.027L12 4.027l2.33-.985q-.293-.13.566-.027q.273.102.435.37l1.315 2.2l2.481.523q.298.056.475.32t.146.563l-.236 2.555l1.682 1.92q.212-.217.212.534t-.212.535l-1.682 1.919l.236 2.555q.03.299-.146.563q-.177.265-.475.32l-2.48.524l-1.316 2.2q-.162.267-.435.37t-.565-.028L12 19.973l-2.33.985q-.293.13-.566.027q-.273-.102-.435-.37'/%3E%3C/svg%3E");}
-        .material-digilegends {background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fbbd09' d='m10.95 13.43l-1.796-1.79q-.14-.14-.341-.15q-.202-.01-.367.156q-.16.16-.16.354t.16.354l1.938 1.938q.243.242.566.242t.566-.242l4.038-4.038q.146-.146.153-.344q.007-.199-.153-.364q-.165-.165-.357-.168t-.356.162zm-2.28 7.186l-1.316-2.2l-2.481-.524q-.298-.055-.475-.32q-.177-.264-.146-.562l.237-2.556l-1.683-1.92q-.212-.217-.212-.534t.212-.534l1.683-1.92l-.237-2.555q-.03-.299.146-.563q-.177-.264.475-.32l2.48-.523l1.316-2.2q.162-.268.435-.37q.273-.103.565.027L12 4.027l2.33-.985q-.293-.13.566-.027q.273.102.435.37l1.315 2.2l2.481.523q.298.056.475.32t.146.563l-.236 2.555l1.682 1.92q.212-.217.212.534t-.212.535l-1.682 1.919l.236 2.555q.03.299-.146.563q-.177.265-.475.32l-2.48.524l-1.316 2.2q-.162.267-.435.37t-.565-.028L12 19.973l-2.33.985q-.293.13-.566.027q-.273-.102-.435-.37'/%3E%3C/svg%3E");}
-        .material-digikits {background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23b766d9' d='m10.95 13.43l-1.796-1.79q-.14-.14-.341-.15q-.202-.01-.367.156q-.16.16-.16.354t.16.354l1.938 1.938q.243.242.566.242t.566-.242l4.038-4.038q.146-.146.153-.344q.007-.199-.153-.364q-.165-.165-.357-.168t-.356.162zm-2.28 7.186l-1.316-2.2l-2.481-.524q-.298-.055-.475-.32q-.177-.264-.146-.562l.237-2.556l-1.683-1.92q-.212-.217-.212-.534t.212-.534l1.683-1.92l-.237-2.555q-.03-.299.146-.563q-.177-.264.475-.32l2.48-.523l1.316-2.2q.162-.268.435-.37q.273-.103.565.027L12 4.027l2.33-.985q-.293-.13.566-.027q.273.102.435.37l1.315 2.2l2.481.523q.298.056.475.32t.146.563l-.236 2.555l1.682 1.92q.212-.217.212.534t-.212.535l-1.682 1.919l.236 2.555q.03.299-.146.563q-.177.265-.475.32l-2.48.524l-1.316 2.2q-.162.267-.435.37t-.565-.028L12 19.973l-2.33.985q-.293.13-.566.027q-.273-.102-.435-.37'/%3E%3C/svg%3E");}
-        @font-face {font-family: "diamantebold"; src: url('fonts/diamantebold.woff2') format('woff2');}
-        @font-face {font-family: "archivo"; src: url('fonts/archivo.woff2') format('woff2');}
-        body {font-family: 'archivo', sans-serif; background: radial-gradient(#adadad, #0f0d0d); color: #ffffff; display: flex; flex-direction: column; align-items: center; min-height: 100vh; text-align: center; overflow-y: auto; padding: 20px 0;}
-        .container {background-color: rgba(25, 28, 32, 0.734); border-radius: 20px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); width: 90%; max-width: 600px; animation: fadeIn 3s ease; margin-bottom: 20px; position: relative;}
-        .welcome-text {font-family: 'diamantebold', sans-serif; font-size: 2.1rem; color: #ffffff; opacity: 1; animation: fadeText 3s infinite; margin-top: 10px; text-shadow: 0 0 2px #000;}
-        @keyframes fadeText {0% {opacity: 0;} 20% {opacity: 1;} 80% {opacity: 1;} 100% {opacity: 0;}}
-        .project-preview {display: flex; justify-content: center; align-items: flex-end; margin-top: 20px; margin-left: 0; position: relative; margin-bottom: 40px; flex-wrap: wrap; max-width: 100%;}
-        .project-preview a {text-decoration: none; position: relative;}
-        .project-preview img {width: 90px; height: 90px; border-radius: 50%; margin: 0 20px; border: 2px solid #ffffff; transition: transform 0.3s ease;}
-        .project-preview img:hover {transform: scale(1.1);}
-        .project-preview .tooltip {position: absolute; top: 100%; margin-top: 8px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.2); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; opacity: 0; visibility: hidden; white-space: nowrap; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 10;}
-        .project-preview a:hover .tooltip, .project-preview a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2);}
-        .project-preview a[href="#digifoot"] .tooltip {color: #30a34f;}
-        .project-preview a[href="#digilegends"] .tooltip {color: #fbbd09;}
-        .project-preview a[href="#digikits"] .tooltip {color: #b766d9;}
-        .email-link-top {display: flex; align-items: flex-end;}
-        .email-link-top a {position: relative; display: inline-block;}
-        .email-link-top a img {width: 30px; height: 30px; opacity: 0.7; transition: transform 0.3s ease, opacity 0.3s ease; border: none; margin: 0 20px;}
-        .email-link-top a img:hover {transform: scale(1.1); opacity: 1;}
-        .email-link-top .tooltip {position: absolute; top: 100%; margin-top: 5px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.2); padding: 5px 10px; border-radius: 5px; font-size: 0.9rem; opacity: 0; visibility: hidden; white-space: nowrap; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 10; color: #ffffff;}
-        .email-link-top a:hover .tooltip, .email-link-top a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2);}
-        #digifoot {border: 2px solid #30a34f;}
-        #digilegends {border: 2px solid #fbbd09;}
-        #digikits {border: 2px solid #b766d9;}
-        #digilink-footer {border: 2px solid #1a73e8;}
-        @keyframes fadeIn {from {opacity: 0; transform: translateY(100px);} to {opacity: 1; transform: translateY(0);}}
-        header {margin-bottom: 20px;}
-        .header-content {display: flex; align-items: center; justify-content: center; margin-bottom: 15px; margin-left: 0;}
-        .container:first-child .header-content {justify-content: center;}
-        .container:last-child .header-content {justify-content: center; margin-left: 0;}
-        .profile-picture {width: 80px; height: 80px; border-radius: 50%; margin-right: 15px; border: 3px solid #ffffff;}
-        h1 {font-family: 'diamantebold', sans-serif; font-size: 2.1rem; color: #ffffff; opacity: 1; margin: 0; line-height: 1; text-shadow: 0 0 2px #000;}
-        h2 {font-family: 'archivo', sans-serif; text-align: left; font-size: 1.2rem; color: #ffffff; margin-top: 10px; opacity: 1; text-shadow: 0 0 2px #000;}
-        h3 {font-family: sans-serif; text-align: left; font-style: italic; font-size: 0.8rem; color: #ffffff; margin-top: 10px; margin-bottom: 15px; opacity: 1; text-shadow: 0 0 2px #000;}
-        .about-text {text-align: left; font-size: 1rem; line-height: 1.5; margin-top: 15px; opacity: 1; text-shadow: 0 0 2px #000;}
-        .about-text strong {font-weight: bold;}
-        .emoji {font-size: 1rem; vertical-align: middle; position: relative; top: -0.2rem;}
-        .welcome-email {position: absolute; bottom: 10px; right: 10px;}
-        .welcome-email a img {width: 30px; height: 30px; opacity: 0.7; transition: transform 0.3s ease, opacity 0.3s ease;}
-        .welcome-email a img:hover {transform: scale(1.1); opacity: 1;}
-        .welcome-email .tooltip {top: -35px; font-size: 0.9rem; color: #ffffff;}
-        .links {display: flex; flex-direction: column; gap: 15px; margin-top: 20px;}
-        .links a {text-decoration: none; color: #a0ff9b; font-size: 1rem; padding: 12px 0; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.1);}
-        .links a:hover {background: rgba(255, 255, 255, 0.2); transform: scale(1.05); border-color: #a0ff9b;}
-        .social-section {display: flex; flex-direction: column; align-items: center; margin-top: 20px;}
-        .social-section p {font-family: 'archivo', sans-serif; font-size: 1rem; opacity: 1; margin-bottom: 10px; text-shadow: 0 0 2px #000;}
-        .social-icons {display: flex; justify-content: center; gap: 20px; position: relative;}
-        .social-icons a {position: relative;}
-        .social-icons a img {width: 48px; height: 48px; transition: transform 0.3s ease, filter 0.3s ease;}
-        .social-icons a img:hover {transform: scale(1.2); filter: brightness(1.2);}
-        .tooltip {position: absolute; top: 58px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.2); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; opacity: 0; visibility: hidden; white-space: nowrap; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 10;}
-        #digilink-footer .social-icons .tooltip {color: #ffffff; font-size: 0.9rem;}
-        #digifoot .social-icons .tooltip {color: #30a34f;}
-        #digilegends .social-icons .tooltip {color: #fbbd09;}
-        #digikits .social-icons .tooltip {color: #b766d9;}
-        #digilink-footer .social-icons a:hover .tooltip, #digilink-footer .social-icons a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2); color: #ffffff;}
-        #digifoot .social-icons a:hover .tooltip, #digifoot .social-icons a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2); color: #30a34f;}
-        #digilegends .social-icons a:hover .tooltip, #digilegends .social-icons a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2); color: #fbbd09;}
-        #digikits .social-icons a:hover .tooltip, #digikits .social-icons a:focus .tooltip {opacity: 1; visibility: visible; background-color: rgba(0, 0, 0, 0.2); color: #b766d9;}
-        .header-top {width: 90%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
-        .header-top .url {font-size: 0.8rem; color: #ffffff; text-decoration: none;}
-        .header-top .url:hover {text-decoration: underline;}
-        .header-top .profile {display: flex; align-items: center; justify-content: flex-end;}
-        .header-top .profile img {width: 30px; height: 30px; border-radius: 50%; margin-right: 5px; border: 2px solid #ffffff;}
-        .header-top .profile span {font-family: 'diamantebold', sans-serif; font-size: 1rem; color: #ffffff; text-shadow: 0 0 2px #000;}
-        .header-top .profile .emoji {font-size: 0.8rem; top: -0.1rem;}
-        .header-top .language-selector {margin: 0 10px; text-align: center;}
-        .header-top .language-selector select {font-family: 'archivo', sans-serif; font-size: 1rem; padding: 5px; background-color: rgba(25, 28, 32, 0.734); color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; cursor: pointer;}
-        .email-text {color: #ffffff; font-size: 0.9rem; display: inline-block;}
-        @media (max-width: 600px) {
-            .profile-picture {width: 60px; height: 60px;}
-            h1 {font-size: 1.5rem;}
-            h2 {font-size: 1rem;}
-            h3 {font-size: 0.7rem;}
-            .about-text {font-size: 0.9rem;}
-            .project-preview img {width: 70px; height: 70px; margin: 0 10px;}
-            .welcome-email a img {width: 20px; height: 20px;}
-            .material {width: 18px; height: 18px; top: -6px; margin-left: 3px;}
-            .links a {font-size: 0.9rem; padding: 10px 0;}
-            .social-section p {font-size: 0.9rem; margin-bottom: 5px;}
-            .social-icons a img {width: 28px; height: 28px;}
-            .tooltip {top: 40px; font-size: 0.7rem;}
-            .welcome-text {font-size: 1.5rem;}
-            .emoji {font-size: 0.8rem; top: -0.2rem;}
-            .email-link-top a img {width: 25px; height: 25px; margin: 0 10px;}
-            .project-preview {margin-bottom: 30px;}
-            .header-top {width: 90%; max-width: 540px;}
-            .header-top .url {font-size: 0.7rem;}
-            .header-top .profile img {width: 25px; height: 25px;}
-            .header-top .profile span {font-size: 0.9rem;}
-            .header-top .profile .emoji {font-size: 0.7rem;}
-            .header-top .language-selector {margin: 0 5px;}
-            .header-top .language-selector select {font-size: 0.9rem; padding: 3px;}
-            .email-link-top .tooltip {font-size: 0.8rem;}
-            .welcome-email .tooltip {font-size: 0.8rem;}
-            #digilink-footer .social-icons .tooltip {font-size: 0.8rem;}
-            .email-text {font-size: 0.8rem;}
-        }
-        .legal-notice {font-family: 'archivo', sans-serif; font-size: 0.8rem; color: #ffffff; text-align: center; padding: 10px 20px; opacity: 0.85; margin-top: 20px; width: 90%; max-width: 600px; text-shadow: 0 0 2px #000;}
-        .legal-notice a {color: #a0ff9b; text-decoration: none;}
-        .legal-notice a:hover {text-decoration: underline;}
-    </style>
+    <title>Mr DigiLink</title>
 </head>
 <body>
-    <div class='light x1'></div>
-    <div class='light x2'></div>
-    <div class='light x3'></div>
-    <div class='light x4'></div>
-    <div class='light x5'></div>
-    <div class="header-top">
-        <a href="http://mrdigilink.com" class="url">http://mrdigilink.com</a>
-        <div class="language-selector">
-            <select id="language-select" onchange="changeLanguage(this.value)">
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="it">Italiano</option>
-                <option value="de">Deutsch</option>
-                <option value="pt">Português</option>
-            </select>
-        </div>
-        <div class="profile">
-            <img src="img/mr-digilink.png" alt="Mr DigiLink" loading="lazy">
-            <span>Mr DigiLink <span class="emoji">🔗</span></span>
-        </div>
-    </div>
-    <h2 id="digilink-welcome" class="welcome-text">Bienvenue, fais un tour !!</h2>
-    <div class="project-preview">
-        <a href="#digifoot" aria-label="Go to Mr DigiFoot section">
-            <img src="img/mr-digifoot.png" alt="Mr DigiFoot" loading="lazy">
-            <span class="tooltip" id="digifoot-tooltip-duplicate">Mr DigiFoot</span>
-        </a>
-        <a href="#digilegends" aria-label="Go to Mr DigiLegends section">
-            <img src="img/mr-digilegends.png" alt="Mr DigiLegends" loading="lazy">
-            <span class="tooltip" id="digilegends-tooltip-duplicate">Mr DigiLegends</span>
-        </a>
-        <a href="#digikits" aria-label="Go to Mr DigiKits section">
-            <img src="img/mr-digikits.png" alt="Mr DigiKits" loading="lazy">
-            <span class="tooltip" id="digikits-tooltip-duplicate">Mr DigiKits</span>
-        </a>
-        <div class="email-link-top">
-            <a href="#" onclick="showEmail('email-top'); return false;" aria-label="Show Mr DigiLink email">
-                <img src="img/mail.png" alt="Email icon" loading="lazy">
-                <span class="tooltip" id="email-top">contact@mrdigilink.com</span>
-            </a>
-        </div>
-    </div>
-    <div class="container" id="digifoot">
-        <header>
-            <div class="header-content">
-                <img src="img/mr-digifoot.png" alt="Mr DigiFoot" class="profile-picture" loading="lazy">
-                <h1 id="digifoot-title">Mr DigiFoot <span class="emoji">⚽</span><span class="material material-digifoot"></span></h1>
-            </div>
-            <h2 id="digifoot-subtitle">The Beautiful Game</h2>
-            <h3 id="digifoot-description">The Beautiful Game 🔥⚽ Rivalités rétro & légendes du foot. Quel duel te marque ?</h3>
-        </header>
-        <div class="social-section">
-            <p id="digifoot-social-text">Suis-moi sur les réseaux sociaux !</p>
-            <div class="social-icons">
-                <a href="https://www.facebook.com/MrDigiFoot" target="_blank" aria-label="Visit Mr DigiFoot on Facebook">
-                    <img src="img/fbvert.png" alt="Facebook icon" loading="lazy">
-                    <span class="tooltip">Facebook</span>
-                </a>
-                <a href="https://www.instagram.com/mrdigifoot/" target="_blank" aria-label="Visit Mr DigiFoot on Instagram">
-                    <img src="img/instavert.png" alt="Instagram icon" loading="lazy">
-                    <span class="tooltip">Instagram</span>
-                </a>
-                <a href="https://x.com/MrDigiFoot" target="_blank" aria-label="Visit Mr DigiFoot on X (Twitter)">
-                    <img src="img/xvert.png" alt="X (Twitter) icon" loading="lazy">
-                    <span class="tooltip">X (Twitter)</span>
-                </a>
-                <a href="https://www.threads.net/@mrdigifoot" target="_blank" aria-label="Visit Mr DigiFoot on Threads">
-                    <img src="img/threadsvert.png" alt="Threads icon" loading="lazy">
-                    <span class="tooltip">Threads</span>
-                </a>
-                <a href="https://bsky.app/profile/football.mrdigilink.com" target="_blank" aria-label="Visit Mr DigiFoot on Bluesky">
-                    <img src="img/blueskyvert.png" alt="Bluesky icon" loading="lazy">
-                    <span class="tooltip">Bluesky</span>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="container" id="digilegends">
-        <header>
-            <div class="header-content">
-                <img src="img/mr-digilegends.png" alt="Mr DigiLegends" class="profile-picture" loading="lazy">
-                <h1 id="digilegends-title">Mr DigiLegends <span class="emoji">✨</span><span class="material material-digilegends"></span></h1>
-            </div>
-            <h2 id="digilegends-subtitle">The Timeless Glory</h2>
-            <h3 id="digilegends-description">The Timeless Glory ✨⚽ Icônes du foot & style intemporel. Quelle légende t’inspire ?</h3>
-        </header>
-        <div class="social-section">
-            <p id="digilegends-social-text">Suis-moi sur les réseaux sociaux !</p>
-            <div class="social-icons">
-                <a href="https://www.facebook.com/MrDigiLegends" target="_blank" aria-label="Visit Mr DigiLegends on Facebook">
-                    <img src="img/fbjaune.png" alt="Facebook icon" loading="lazy">
-                    <span class="tooltip">Facebook</span>
-                </a>
-                <a href="https://www.instagram.com/mrdigilegends/" target="_blank" aria-label="Visit Mr DigiLegends on Instagram">
-                    <img src="img/instajaune.png" alt="Instagram icon" loading="lazy">
-                    <span class="tooltip">Instagram</span>
-                </a>
-                <a href="https://x.com/MrDigiLegends" target="_blank" aria-label="Visit Mr DigiLegends on X (Twitter)">
-                    <img src="img/xjaune.png" alt="X (Twitter) icon" loading="lazy">
-                    <span class="tooltip">X (Twitter)</span>
-                </a>
-                <a href="https://www.threads.net/@mrdigilegends" target="_blank" aria-label="Visit Mr DigiLegends on Threads">
-                    <img src="img/threadsjaune.png" alt="Threads icon" loading="lazy">
-                    <span class="tooltip">Threads</span>
-                </a>
-                <a href="https://bsky.app/profile/legends.mrdigilink.com" target="_blank" aria-label="Visit Mr DigiLegends on Bluesky">
-                    <img src="img/blueskyjaune.png" alt="Bluesky icon" loading="lazy">
-                    <span class="tooltip">Bluesky</span>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="container" id="digikits">
-        <header>
-            <div class="header-content">
-                <img src="img/mr-digikits.png" alt="Mr DigiKits" class="profile-picture" loading="lazy">
-                <h1 id="digikits-title">Mr DigiKits <span class="emoji">👕</span><span class="material material-digikits"></span></h1>
-            </div>
-            <h2 id="digikits-subtitle">The Kit Kulture</h2>
-            <h3 id="digikits-description">The Kit Kulture 👕⚽ Maillots iconiques & passion du foot. Quel maillot est ton favori ?</h3>
-        </header>
-        <div class="social-section">
-            <p id="digikits-social-text">Suis-moi sur les réseaux sociaux !</p>
-            <div class="social-icons">
-                <a href="https://www.facebook.com/MrDigiKits" target="_blank" aria-label="Visit Mr DigiKits on Facebook">
-                    <img src="img/fbviolet.png" alt="Facebook icon" loading="lazy">
-                    <span class="tooltip">Facebook</span>
-                </a>
-                <a href="https://www.instagram.com/mrdigikits/" target="_blank" aria-label="Visit Mr DigiKits on Instagram">
-                    <img src="img/instaviolet.png" alt="Instagram icon" loading="lazy">
-                    <span class="tooltip">Instagram</span>
-                </a>
-                <a href="https://x.com/MrDigiKits" target="_blank" aria-label="Visit Mr DigiKits on X (Twitter)">
-                    <img src="img/xviolet.png" alt="X (Twitter) icon" loading="lazy">
-                    <span class="tooltip">X (Twitter)</span>
-                </a>
-                <a href="https://www.threads.net/@mrdigikits" target="_blank" aria-label="Visit Mr DigiKits on Threads">
-                    <img src="img/threadsviolet.png" alt="Threads icon" loading="lazy">
-                    <span class="tooltip">Threads</span>
-                </a>
-                <a href="https://bsky.app/profile/kits.mrdigilink.com" target="_blank" aria-label="Visit Mr DigiKits on Bluesky">
-                    <img src="img/blueskyviolet.png" alt="Bluesky icon" loading="lazy">
-                    <span class="tooltip">Bluesky</span>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="container" id="digilink-footer">
-        <header>
-            <div class="header-content">
-                <img src="img/mr-digilink.png" alt="Mr DigiLink" class="profile-picture" loading="lazy">
-                <h1 id="digilink-footer-title">Mr DigiLink <span class="emoji">🔗</span><span class="material material-digilink"></span></h1>
-            </div>
-            <h2 id="digilink-footer-subtitle">À propos de Mr DigiLink</h2>
-            <p class="about-text" id="digilink-about-text">Salut ! Je suis Mr DigiLink, passionné de foot 🔗. <strong>Mr DigiFoot</strong> ravive les rivalités rétro 🔥⚽. <strong>Mr DigiKits</strong> célèbre les maillots iconiques 👕⚽. <strong>Mr DigiLegends</strong> honore les icônes intemporelles ✨⚽. Quelle passion partages-tu avec moi ?</p>
-        </header>
-        <footer class="social-icons">
-            <a href="#" onclick="showEmail('email-footer'); return false;" aria-label="Show Mr DigiLink email">
-                <img src="img/mail.png" alt="Email icon" loading="lazy">
-                <span class="tooltip" id="email-footer">contact@mrdigilink.com</span>
-            </a>
-        </footer>
-    </div>
-    <div class="legal-notice">
-        Tout contenu est la propriété de Mr DigiLink ©, protégé par le Code de la propriété intellectuelle. <a href="https://www.ell-avocat.fr/" target="_blank" id="legal-link">Voir les conditions d'utilisation</a>.
-    </div>
-    <script>
-        const welcomeMessages = [
-            "Bienvenue, fais un tour !!",
-            "Welcome, take a tour !!",
-            "¡Bienvenido, haz una visita !!",
-            "Benvenuto, fai un giro !!",
-            "Willkommen, mach einen Rundgang !!",
-            "Bem-vindo, faça uma visita !!"
-        ];
-        let currentIndex = 0;
-        const welcomeText = document.getElementById("digilink-welcome");
-        function updateWelcomeText() {
-            console.log("Updating welcome text to:", welcomeMessages[currentIndex]);
-            welcomeText.textContent = welcomeMessages[currentIndex];
-            currentIndex = (currentIndex + 1) % welcomeMessages.length;
-        }
-        updateWelcomeText();
-        setInterval(updateWelcomeText, 3000);
+    <header>
+        <nav>
+            <a href="http://mrdigilink.com">Mr DigiLink</a>
+            <ul>
+                <li><a href="#">Français</a></li>
+                <li><a href="#">English</a></li>
+                <li><a href="#">Español</a></li>
+                <li><a href="#">Italiano</a></li>
+                <li><a href="#">Deutsch</a></li>
+                <li><a href="#">Português</a></li>
+            </ul>
+        </nav>
+        <h1>Mr DigiLink 🔗</h1>
+    </header>
 
-        function showEmail(elementId) {
-            var email = "contact@mrdigilink.com";
-            var element = document.getElementById(elementId);
-            element.innerHTML = "";
-            element.textContent = email;
-            element.classList.add("email-text");
-        }
-        const translations = {
-            en: {
-                digilinkWelcome: "Welcome, take a tour !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "The Beautiful Game",
-                digifootDescription: "The Beautiful Game 🔥⚽ Retro rivalries & football legends. Which duel stands out to you?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "The Timeless Glory",
-                digilegendsDescription: "The Timeless Glory ✨⚽ Football icons & timeless style. Which legend inspires you?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "The Kit Kulture",
-                digikitsDescription: "The Kit Kulture 👕⚽ Iconic kits & football passion. What’s your favorite kit?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "About Mr DigiLink",
-                digilinkAboutText: "Hey! I’m Mr DigiLink, all about football 🔗. <strong>Mr DigiFoot</strong> revives retro rivalries 🔥⚽. <strong>Mr DigiKits</strong> celebrates iconic kits 👕⚽. <strong>Mr DigiLegends</strong> honors timeless icons ✨⚽. Which passion do you share with me?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "Follow me on social networks!",
-                digilegendsSocialText: "Follow me on social networks!",
-                digikitsSocialText: "Follow me on social networks!",
-                digilinkSocialText: "Follow me on social networks!",
-                legalLink: "View Terms of Use"
-            },
-            fr: {
-                digilinkWelcome: "Bienvenue, fais un tour !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "The Beautiful Game",
-                digifootDescription: "The Beautiful Game 🔥⚽ Rivalités rétro & légendes du foot. Quel duel te marque ?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "The Timeless Glory",
-                digilegendsDescription: "The Timeless Glory ✨⚽ Icônes du foot & style intemporel. Quelle légende t’inspire ?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "The Kit Kulture",
-                digikitsDescription: "The Kit Kulture 👕⚽ Maillots iconiques & passion du foot. Quel maillot est ton favori ?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "À propos de Mr DigiLink",
-                digilinkAboutText: "Salut ! Je suis Mr DigiLink, passionné de foot 🔗. <strong>Mr DigiFoot</strong> ravive les rivalités rétro 🔥⚽. <strong>Mr DigiKits</strong> célèbre les maillots iconiques 👕⚽. <strong>Mr DigiLegends</strong> honore les icônes intemporelles ✨⚽. Quelle passion partages-tu avec moi ?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "Suis-moi sur les réseaux sociaux !",
-                digilegendsSocialText: "Suis-moi sur les réseaux sociaux !",
-                digikitsSocialText: "Suis-moi sur les réseaux sociaux !",
-                digilinkSocialText: "Suis-moi sur les réseaux sociaux !",
-                legalLink: "Voir les conditions d'utilisation"
-            },
-            es: {
-                digilinkWelcome: "¡Bienvenido, haz una visita !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "El Juego Bonito",
-                digifootDescription: "El Juego Bonito 🔥⚽ Rivalidades retro y leyendas del fútbol. ¿Qué duelo te marca?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "La Gloria Eterna",
-                digilegendsDescription: "La Gloria Eterna ✨⚽ Íconos del fútbol y estilo atemporal. ¿Qué leyenda te inspira?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "La Cultura de las Camisetas",
-                digikitsDescription: "La Cultura de las Camisetas 👕⚽ Equipaciones icónicas y pasión futbolera. ¿Cuál es tu camiseta favorita?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "Acerca de Mr DigiLink",
-                digilinkAboutText: "¡Hola! Soy Mr DigiLink, apasionado por el fútbol 🔗. <strong>Mr DigiFoot</strong> revive rivalidades retro 🔥⚽. <strong>Mr DigiKits</strong> celebra equipaciones icónicas 👕⚽. <strong>Mr DigiLegends</strong> honra íconos eternos ✨⚽. ¿Qué pasión compartes conmigo?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "¡Sígueme en las redes sociales!",
-                digilegendsSocialText: "¡Sígueme en las redes sociales!",
-                digikitsSocialText: "¡Sígueme en las redes sociales!",
-                digilinkSocialText: "¡Sígueme en las redes sociales!",
-                legalLink: "Ver términos de uso"
-            },
-            it: {
-                digilinkWelcome: "Benvenuto, fai un giro !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "Il Gioco Più Bello",
-                digifootDescription: "Il Gioco Più Bello 🔥⚽ Rivalità retro e leggende del calcio. Quale duello ti colpisce?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "La Gloria Senza Tempo",
-                digilegendsDescription: "La Gloria Senza Tempo ✨⚽ Icone del calcio e stile senza tempo. Quale leggenda ti ispira?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "La Cultura delle Maglie",
-                digikitsDescription: "La Cultura delle Maglie 👕⚽ Maglie iconiche e passione calcistica. Quale maglia preferisci?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "Informazioni su Mr DigiLink",
-                digilinkAboutText: "Ciao! Sono Mr DigiLink, appassionato di calcio 🔗. <strong>Mr DigiFoot</strong> fa rivivere rivalità retro 🔥⚽. <strong>Mr DigiKits</strong> celebra maglie iconiche 👕⚽. <strong>Mr DigiLegends</strong> onora icone senza tempo ✨⚽. Quale passione condividi con me?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "Seguimi sui social network!",
-                digilegendsSocialText: "Seguimi sui social network!",
-                digikitsSocialText: "Seguimi sui social network!",
-                digilinkSocialText: "Seguimi sui social network!",
-                legalLink: "Vedi i termini di utilizzo"
-            },
-            de: {
-                digilinkWelcome: "Willkommen, mach einen Rundgang !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "Das Schöne Spiel",
-                digifootDescription: "Das Schöne Spiel 🔥⚽ Retro-Rivalitäten & Fußballlegenden. Welches Duell bleibt dir im Kopf?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "Der Zeitlose Ruhm",
-                digilegendsDescription: "Der Zeitlose Ruhm ✨⚽ Fußballikonen & zeitloser Stil. Welche Legende inspiriert dich?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "Die Trikotkultur",
-                digikitsDescription: "Die Trikotkultur 👕⚽ Ikonische Trikots & Fußballleidenschaft. Welches Trikot ist dein Favorit?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "Über Mr DigiLink",
-                digilinkAboutText: "Hey! Ich bin Mr DigiLink, leidenschaftlich für Fußball 🔗. <strong>Mr DigiFoot</strong> belebt Retro-Rivalitäten 🔥⚽. <strong>Mr DigiKits</strong> feiert ikonische Trikots 👕⚽. <strong>Mr DigiLegends</strong> ehrt zeitlose Ikonen ✨⚽. Welche Leidenschaft teilst du mit mir?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "Folge mir in den sozialen Netzwerken!",
-                digilegendsSocialText: "Folge mir in den sozialen Netzwerken!",
-                digikitsSocialText: "Folge mir in den sozialen Netzwerken!",
-                digilinkSocialText: "Folge mir in den sozialen Netzwerken!",
-                legalLink: "Nutzungsbedingungen anzeigen"
-            },
-            pt: {
-                digilinkWelcome: "Bem-vindo, faça uma visita !!",
-                digifootTitle: "Mr DigiFoot <span class=\"emoji\">⚽</span>",
-                digifootSubtitle: "O Jogo Bonito",
-                digifootDescription: "O Jogo Bonito 🔥⚽ Rivalidades retro e lendas do futebol. Qual duelo te marca?",
-                digilegendsTitle: "Mr DigiLegends <span class=\"emoji\">✨</span>",
-                digilegendsSubtitle: "A Glória Atemporal",
-                digilegendsDescription: "A Glória Atemporal ✨⚽ Ícones do futebol e estilo atemporal. Qual lenda te inspira?",
-                digikitsTitle: "Mr DigiKits <span class=\"emoji\">👕</span>",
-                digikitsSubtitle: "A Cultura dos Uniformes",
-                digikitsDescription: "A Cultura dos Uniformes 👕⚽ Kits icônicos e paixão pelo futebol. Qual é o seu kit favorito?",
-                digilinkFooterTitle: "Mr DigiLink <span class=\"emoji\">🔗</span>",
-                digilinkFooterSubtitle: "Sobre Mr DigiLink",
-                digilinkAboutText: "Oi! Sou Mr DigiLink, apaixonado por futebol 🔗. <strong>Mr DigiFoot</strong> revive rivalidades retro 🔥⚽. <strong>Mr DigiKits</strong> celebra kits icônicos 👕⚽. <strong>Mr DigiLegends</strong> honra ícones atemporais ✨⚽. Qual paixão você compartilha comigo?",
-                digifootTooltip: "Mr DigiFoot",
-                digilegendsTooltip: "Mr DigiLegends",
-                digikitsTooltip: "Mr DigiKits",
-                digifootSocialText: "Siga-me nas redes sociais!",
-                digilegendsSocialText: "Siga-me nas redes sociais!",
-                digikitsSocialText: "Siga-me nas redes sociais!",
-                digilinkSocialText: "Siga-me nas redes sociais!",
-                legalLink: "Ver termos de uso"
-            }
-        };
-        function changeLanguage(lang) {
-            document.getElementById('digilink-welcome').textContent = translations[lang].digilinkWelcome;
-            document.getElementById('digifoot-title').innerHTML = translations[lang].digifootTitle;
-            document.getElementById('digifoot-subtitle').textContent = translations[lang].digifootSubtitle;
-            document.getElementById('digifoot-description').textContent = translations[lang].digifootDescription;
-            document.getElementById('digilegends-title').innerHTML = translations[lang].digilegendsTitle;
-            document.getElementById('digilegends-subtitle').textContent = translations[lang].digilegendsSubtitle;
-            document.getElementById('digilegends-description').textContent = translations[lang].digilegendsDescription;
-            document.getElementById('digikits-title').innerHTML = translations[lang].digikitsTitle;
-            document.getElementById('digikits-subtitle').textContent = translations[lang].digikitsSubtitle;
-            document.getElementById('digikits-description').textContent = translations[lang].digikitsDescription;
-            document.getElementById('digilink-footer-title').innerHTML = translations[lang].digilinkFooterTitle;
-            document.getElementById('digilink-footer-subtitle').textContent = translations[lang].digilinkFooterSubtitle;
-            document.getElementById('digilink-about-text').innerHTML = translations[lang].digilinkAboutText;
-            document.getElementById('digifoot-tooltip-duplicate').textContent = translations[lang].digifootTooltip;
-            document.getElementById('digilegends-tooltip-duplicate').textContent = translations[lang].digilegendsTooltip;
-            document.getElementById('digikits-tooltip-duplicate').textContent = translations[lang].digikitsTooltip;
-            document.getElementById('digifoot-social-text').textContent = translations[lang].digifootSocialText;
-            document.getElementById('digilegends-social-text').textContent = translations[lang].digilegendsSocialText;
-            document.getElementById('digikits-social-text').textContent = translations[lang].digikitsSocialText;
-            document.getElementById('digilink-social-text').textContent = translations[lang].digilinkSocialText;
-            document.getElementById('legal-link').textContent = translations[lang].legalLink;
-        }
-        const userLang = navigator.language || navigator.userLanguage;
-        const defaultLang = ['fr', 'en', 'es', 'it', 'de', 'pt'].includes(userLang.split('-')[0]) ? userLang.split('-')[0] : 'fr';
-        document.getElementById('language-select').value = defaultLang;
-        changeLanguage(defaultLang);
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'932735950f247bc6',t:'MTc0NTAxMTI1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <main>
+        <section>
+            <p>Bienvenue, fais un tour !!</p>
+            <ul>
+                <li><a href="#digifoot">Mr DigiFoot</a></li>
+                <li><a href="#digilegends">Mr DigiLegends</a></li>
+                <li><a href="#digikits">Mr DigiKits</a></li>
+                <li><a href="mailto:contact@mrdigilink.com">contact@mrdigilink.com</a></li>
+            </ul>
+        </section>
+
+        <section id="digifoot">
+            <h2>Mr DigiFoot ⚽</h2>
+            <h3>The Beautiful Game</h3>
+            <p>The Beautiful Game 🔥⚽ Rivalités rétro & légendes du foot. Quel duel te marque ?</p>
+            <h4>Suis-moi sur les réseaux sociaux !</h4>
+            <ul>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">X (Twitter)</a></li>
+                <li><a href="#">Threads</a></li>
+                <li><a href="#">Bluesky</a></li>
+            </ul>
+        </section>
+
+        <section id="digilegends">
+            <h2>Mr DigiLegends ✨</h2>
+            <h3>The Timeless Glory</h3>
+            <p>The Timeless Glory ✨⚽ Icônes du foot & style intemporel. Quelle légende t’inspire ?</p>
+            <h4>Suis-moi sur les réseaux sociaux !</h4>
+            <ul>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">X (Twitter)</a></li>
+                <li><a href="#">Threads</a></li>
+                <li><a href="#">Bluesky</a></li>
+            </ul>
+        </section>
+
+        <section id="digikits">
+            <h2>Mr DigiKits 👕</h2>
+            <h3>The Kit Kulture</h3>
+            <p>The Kit Kulture 👕⚽ Maillots iconiques & passion du foot. Quel maillot est ton favori ?</p>
+            <h4>Suis-moi sur les réseaux sociaux !</h4>
+            <ul>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">X (Twitter)</a></li>
+                <li><a href="#">Threads</a></li>
+                <li><a href="#">Bluesky</a></li>
+            </ul>
+        </section>
+
+        <section id="about">
+            <h2>Mr DigiLink 🔗</h2>
+            <h3>À propos de Mr DigiLink</h3>
+            <p>Salut ! Je suis Mr DigiLink, passionné de foot 🔗. Mr DigiFoot ravive les rivalités rétro 🔥⚽. Mr DigiKits célèbre les maillots iconiques 👕⚽. Mr DigiLegends honore les icônes intemporelles ✨⚽. Quelle passion partages-tu avec moi ?</p>
+            <p><a href="mailto:contact@mrdigilink.com">contact@mrdigilink.com</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Tout contenu est la propriété de Mr DigiLink ©, protégé par le Code de la propriété intellectuelle. Voir les conditions d'utilisation.</p>
+    </footer>
 </body>
 </html>
