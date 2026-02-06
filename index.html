@@ -38,7 +38,7 @@
         padding: 20px 0;
     }
 
-    /* --- EFFETS D'ARRIÈRE-PLAN --- */
+    /* --- EFFETS DE FOND & LUMIÈRES --- */
     .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     .light {
         position: absolute; width: 1px; height: 80px;
@@ -51,7 +51,7 @@
         100% { transform: translateY(-20vh); opacity: 0; }
     }
 
-    /* --- BARRE DE NAVIGATION (HEADER) --- */
+    /* --- HEADER BAR --- */
     .header-top {
         width: 90%; max-width: 850px;
         display: flex; justify-content: space-between; align-items: center;
@@ -62,34 +62,34 @@
         box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     }
 
-    .url-brand { font-size: 0.8rem; color: var(--primary-blue); text-decoration: none; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .url-brand { font-size: 0.8rem; color: var(--primary-blue); text-decoration: none; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
 
     .language-selector select {
         background: #1a1a1a; color: white; border: 1px solid var(--glass-border);
-        border-radius: 20px; padding: 6px 15px; cursor: pointer; outline: none; appearance: none;
+        border-radius: 20px; padding: 6px 15px; outline: none; cursor: pointer; font-size: 0.85rem; appearance: none; text-align: center;
     }
 
     .profile-small { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; }
     .profile-small img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
 
-    /* --- TITRES ET PREVIEWS --- */
+    /* --- TITRES & PREVIEWS --- */
     .welcome-text {
         font-size: 2.2rem; font-weight: 800; margin: 30px 0; text-align: center;
         min-height: 4.5rem; transition: opacity 0.4s ease-in-out; padding: 0 20px; line-height: 1.2;
     }
 
-    .color-hub { color: var(--primary-blue); }
-    .color-foot { color: var(--foot-green); text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 2px rgba(255,255,255,0.3); }
-    .color-legends { color: var(--legends-gold); }
-    .color-kits { color: var(--kits-purple); text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 2px rgba(255,255,255,0.3); }
+    .color-hub    { color: var(--primary-blue);   font-weight: 800; }
+    .color-foot   { color: var(--foot-green);     font-weight: 800; text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 2px rgba(255,255,255,0.3); }
+    .color-legends{ color: var(--legends-gold);   font-weight: 800; }
+    .color-kits   { color: var(--kits-purple);    font-weight: 800; text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 2px rgba(255,255,255,0.3); }
 
-    .project-preview { display: flex; gap: 15px; margin-bottom: 40px; justify-content: center; flex-wrap: wrap; }
+    .project-preview { display: flex; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
     .project-circle { position: relative; width: 64px; height: 64px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .project-circle img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid white; object-fit: cover; }
     .project-circle:hover { transform: scale(1.15) rotate(3deg); }
     .project-circle:hover img { box-shadow: 0 0 20px rgba(255,255,255,0.2); }
 
-    /* --- CARTES PRINCIPALES --- */
+    /* --- CARTES (CONTAINERS) --- */
     .container {
         background: var(--glass-bg);
         backdrop-filter: blur(15px);
@@ -98,115 +98,111 @@
         padding: 35px;
         width: 90%;
         max-width: 680px;
-        margin: 0 auto 25px auto;
+        margin-bottom: 25px;
         position: relative;
         overflow: hidden;
+        min-height: 220px;
         display: flex;
         flex-direction: column;
-        min-height: 220px;
+        justify-content: space-between;
     }
 
-    .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; }
-    .section-header img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid white; flex-shrink: 0; }
+    .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; flex-shrink: 0; }
+    .section-header img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid white; }
 
     h1 { font-size: 1.8rem; letter-spacing: -0.5px; }
     .subtitle { font-size: 1rem; color: #888; text-transform: uppercase; font-weight: 800; margin-bottom: 10px; }
 
     .description { flex-grow: 1; margin: 0.8em 0; font-size: 1.05rem; line-height: 1.55; color: #ccc; white-space: pre-wrap; }
 
-    /* --- BOUTONS SOCIAUX AVEC EFFETS GLOW --- */
-    .social-row { position: absolute; bottom: 25px; right: 25px; display: flex; gap: 15px; }
-
+    /* --- SOCIAL BUTTONS & GLOW EFFECTS --- */
+    .social-row { position: absolute; bottom: 25px; right: 25px; display: flex; gap: 15px; flex-shrink: 0; }
     .social-btn {
         width: 58px; height: 58px; display: flex; align-items: center; justify-content: center;
         background: rgba(255,255,255,0.08); border-radius: 18px; border: 1px solid rgba(255,255,255,0.1);
         text-decoration: none; position: relative; transition: all 0.4s ease;
     }
+    .social-btn img { width: 32px; height: 32px; }
 
-    .social-btn img { width: 32px; height: 32px; position: relative; z-index: 2; }
-
-    /* Lueur pulsante permanente */
+    /* Permanent Soft Glow */
     .social-btn::after {
         content: ''; position: absolute; inset: 0; border-radius: 18px;
         box-shadow: 0 0 12px 4px rgba(255, 255, 255, 0);
-        animation: soft-glow 5s ease-in-out infinite;
-        pointer-events: none; z-index: 1;
+        animation: soft-glow 5s ease-in-out infinite; pointer-events: none; z-index: -1;
     }
-
     @keyframes soft-glow {
         0%, 100% { box-shadow: 0 0 12px 4px rgba(255, 255, 255, 0.08); }
         50%      { box-shadow: 0 0 20px 8px rgba(255, 255, 255, 0.18); }
     }
 
-    /* Effets de couleur spécifiques par section */
+    .social-btn:hover { transform: scale(1.1) translateY(-5px); background: rgba(255,255,255,0.15); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+    .social-btn:hover::after { animation: none; box-shadow: 0 0 24px 10px rgba(255, 255, 255, 0.35); }
+
+    /* Section Specific Styles */
     #digifoot { border-left: 6px solid var(--foot-green); }
-    #digifoot .social-btn:hover { border-color: var(--foot-green); box-shadow: 0 0 24px 10px rgba(48,163,79,0.35); }
+    #digifoot .social-btn:hover { border-color: var(--foot-green); box-shadow: 0 0 15px rgba(48,163,79,0.4); }
 
     #digilegends { border-left: 6px solid var(--legends-gold); }
-    #digilegends .social-btn:hover { border-color: var(--legends-gold); box-shadow: 0 0 24px 10px rgba(251,189,9,0.35); }
+    #digilegends .social-btn:hover { border-color: var(--legends-gold); box-shadow: 0 0 15px rgba(251,189,9,0.4); }
 
     #digikits { border-left: 6px solid var(--kits-purple); }
-    #digikits .social-btn:hover { border-color: var(--kits-purple); box-shadow: 0 0 24px 10px rgba(183,102,217,0.35); }
+    #digikits .social-btn:hover { border-color: var(--kits-purple); box-shadow: 0 0 15px rgba(183,102,217,0.4); }
 
     #digilink-footer { border-left: 6px solid var(--primary-blue); }
-    #digilink-footer .social-btn:hover { border-color: var(--primary-blue); box-shadow: 0 0 24px 10px rgba(26,115,232,0.35); }
-
     #digilink-footer .social-row { flex-direction: column; align-items: flex-end; gap: 12px; }
+    #digilink-footer .social-btn:hover { border-color: var(--primary-blue); box-shadow: 0 0 15px rgba(26,115,232,0.4); }
 
-    /* --- CONTACT ET FOOTER --- */
-    .contact-area { text-align: center; margin: 20px 0; }
+    /* --- CONTACT AREA --- */
+    .contact-area { width: 100%; text-align: center; margin: 20px 0; }
     .email-display {
         background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-        padding: 12px 25px; border-radius: 50px; font-size: 0.95rem;
-        color: var(--primary-blue); font-weight: 700; cursor: pointer; backdrop-filter: blur(5px);
-        transition: 0.3s;
+        padding: 12px 25px; border-radius: 50px; font-size: 0.95rem; color: var(--primary-blue);
+        font-weight: 700; display: inline-block; cursor: pointer; transition: all 0.3s; backdrop-filter: blur(5px);
     }
     .email-display:hover { background: rgba(26,115,232,0.15); border-color: var(--primary-blue); transform: scale(1.05); }
 
-    /* --- CONFIGURATION MOBILE (OPTIMISÉE) --- */
-    @media (max-width: 500px) {
-        .welcome-text { font-size: 1.5rem; min-height: 3.5rem; }
+    /* --- MOBILE OPTIMIZATION (TOTAL CENTER STRATEGY) --- */
+    @media (max-width: 550px) {
+        .welcome-text { font-size: 1.6rem; min-height: 4rem; line-height: 1.3; padding: 0 16px; }
 
         .container {
-            padding: 24px 20px;
+            padding: 30px 20px;
             width: 94%;
             min-height: auto;
+            align-items: center; /* Tout au centre */
+            text-align: center;
         }
 
-        /* L'avatar passe au-dessus pour éviter d'écraser le texte horizontalement */
         .section-header {
             flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .section-header img { width: 56px; height: 56px; }
+        .section-header img { width: 70px; height: 70px; }
+
+        h1 { font-size: 1.5rem; }
 
         .description {
-            font-size: 0.95rem;
+            font-size: 0.98rem;
+            line-height: 1.55;
             padding-right: 0;
-            margin-bottom: 70px; /* Espace pour les icônes sociales */
+            margin-bottom: 20px;
         }
 
         .social-row {
-            bottom: 20px;
-            right: 20px;
-            gap: 12px;
+            position: static; /* On libère le bouton du coin pour le centrer */
+            justify-content: center;
+            margin-top: 10px;
+            gap: 15px;
         }
 
-        .social-btn { width: 54px; height: 54px; }
-
-        /* Réglage spécifique footer DigiLink sur mobile */
         #digilink-footer .social-row {
-            flex-direction: row;
-            position: relative;
-            bottom: auto; right: auto;
-            justify-content: flex-end;
-            margin-top: 15px;
+            flex-direction: row; /* Insta et Threads côte à côte sur mobile */
         }
-        #digilink-footer .description { margin-bottom: 0; }
 
-        .header-top { padding: 8px 15px; width: 96%; }
+        .project-circle { width: 56px; height: 56px; }
+        .header-top { padding: 8px 16px; width: 96%; gap: 8px; }
         .url-brand { display: none; }
     }
 </style>
