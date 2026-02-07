@@ -3,21 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mr DigiLink: The hub for football fans 🔥⚽. Iconic kits 👕, legendary rivalries and football stories ✨.">
+    <meta name="description" content="Mr DigiLink : Le carrefour des passionnés de football 🔥⚽. Maillots iconiques 👕, rivalités et légendes ✨.">
     <meta name="author" content="Mr DigiLink">
     <title>Mr DigiLink - The Digi Hub</title>
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mrdigilink.com/">
-    <meta property="og:title" content="Mr DigiLink - The Digi Hub">
-    <meta property="og:description" content="Explore the best of football: iconic kits, historic rivalries and legendary players.">
-    <meta property="og:image" content="https://mrdigilink.com/img/mr-digilink-v2.png?v=2">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mr DigiLink - The Digi Hub">
-    <meta name="twitter:description" content="Football legends, cult kits and epic rivalries. All in one place.">
-    <meta name="twitter:image" content="https://mrdigilink.com/img/mr-digilink-v2.png?v=2">
-
+    
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800&display=swap" rel="stylesheet">
     
 <style>
@@ -160,7 +149,19 @@
     #digikits .social-btn:hover { border-color: var(--kits-purple); box-shadow: 0 0 15px rgba(183,102,217,0.4); }
 
     #digilink-footer { border-left: 6px solid var(--primary-blue); }
-    #digilink-footer .social-row { flex-direction: column; align-items: flex-end; gap: 12px; }
+	/* Style spécifique pour le bloc Mr DigiLink pour faire un carré */
+	#digilink-footer .social-row {
+		position: absolute;
+		bottom: 25px;
+		right: 25px;
+		display: grid; /* On passe en mode grille */
+		grid-template-columns: repeat(2, 54px); /* 2 colonnes de 54px */
+		gap: 10px; /* Espace entre les boutons */
+	}
+		/* On ajuste la description pour laisser de la place au carré à droite */
+	#digilink-footer .description {
+		padding-right: 130px; 
+	}
     #digilink-footer .social-btn:hover { border-color: var(--primary-blue); box-shadow: 0 0 15px rgba(26,115,232,0.4); }
 
     /* --- CONTACT AREA --- */
@@ -209,8 +210,16 @@
         }
 
         #digilink-footer .social-row {
-            flex-direction: row; /* Insta et Threads côte à côte sur mobile */
-        }
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, 54px);
+        justify-content: center;
+        margin: 20px auto 0 auto;
+		}
+		
+		#digilink-footer .description {
+			padding-right: 0;
+		}
 
         .project-circle { width: 56px; height: 56px; }
         .header-top { padding: 8px 16px; width: 96%; gap: 8px; }
@@ -302,6 +311,8 @@
         <p class="description" id="digilink-about-text"></p>
         
         <div class="social-row">
+			<a href="https://www.tiktok.com/@mrdigilink" target="_blank" class="social-btn"><img src="img/tiktok.png" alt="TikTok"></a>
+			<a href="https://www.youtube.com/@MrDigiLink-Yt" target="_blank" class="social-btn"><img src="img/youtube.png" alt="YouTube"></a>
             <a href="https://www.instagram.com/mrdigilink/" target="_blank" class="social-btn"><img src="img/insta.png" alt="Instagram"></a>
             <a href="https://www.threads.net/@mrdigilink" target="_blank" class="social-btn"><img src="img/threads.png" alt="Threads"></a>
         </div>
@@ -487,6 +498,4 @@
     </script>
 
 </body>
-
 </html>
-
