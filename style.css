@@ -83,9 +83,42 @@ body {
     user-select: none;
 }
 
+/* Animation par défaut : rotation chaotique légère */
 #cursor::after {
     content: '⚽';
+    display: inline-block;
     filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+    animation: chaoticBall 0.8s infinite linear;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Le "REBOND" quand on rentre sur une carte */
+body:has(.tile:hover) #cursor::after {
+    animation: ballInCard 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* Le mode "TURBO" sur les liens/boutons */
+body:has(a:hover) #cursor::after {
+    animation: chaoticBall 0.2s infinite linear !important;
+    filter: drop-shadow(0 0 15px var(--primary)) !important;
+    transform: scale(1.6) !important;
+}
+
+@keyframes ballInCard {
+    0% { transform: scale(1) translateY(0); }
+    30% { transform: scale(1.5, 0.6) translateY(0); } /* S'écrase */
+    50% { transform: scale(0.7, 1.3) translateY(-30px); } /* Rebondit haut */
+    70% { transform: scale(1.2, 0.8) translateY(0); } /* Atterrit */
+    100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes chaoticBall {
+    0% { transform: translate(0,0) rotate(0deg); }
+    25% { transform: translate(2px, -2px) rotate(90deg); }
+    50% { transform: translate(-2px, 2px) rotate(180deg); }
+    75% { transform: translate(2px, 2px) rotate(270deg); }
+    100% { transform: translate(0,0) rotate(360deg); }
 }
 
 @media (pointer: coarse) { #cursor { display: none; } }
