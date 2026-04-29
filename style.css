@@ -188,12 +188,12 @@ h1 {
     background: rgba(15, 15, 15, 0.8);
     border: 1px solid var(--card-border);
     border-radius: 40px;
-    overflow: hidden;
     position: relative;
     transform-style: preserve-3d;
     transition: transform 0.1s ease-out, box-shadow 0.3s ease;
     backdrop-filter: blur(15px);
     width: 100%;
+    overflow: visible; /* Indispensable pour laisser déborder l'annotation */
 }
 
 .tile::before {
@@ -203,6 +203,7 @@ h1 {
     background: radial-gradient(circle at var(--x) var(--y), rgba(255,255,255,0.12) 0%, transparent 40%);
     pointer-events: none;
     z-index: 5;
+    border-radius: 40px; /* On remet l'arrondi ici aussi car l'overflow est visible */
 }
 
 .tile-banner {
@@ -211,6 +212,7 @@ h1 {
     overflow: hidden;
     position: relative;
     background: #000;
+    border-radius: 40px 40px 0 0; /* On arrondit le haut de la bannière ici */
 }
 
 .tile-banner img {
@@ -289,7 +291,7 @@ h1 {
 }
 
 .tile-info {
-    padding: 50px 20px 30px;
+    padding: 50px 20px 100px; /* Encore plus de place pour être sûr */
 }
 
 .tile-bio {
@@ -348,6 +350,55 @@ h1 {
 .icon-link:hover::before {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+/* --- ARSENAL ANNOTATION --- */
+.arsenal-mark {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-10deg);
+    color: #ff3131;
+    font-family: 'Caveat', cursive;
+    font-size: 2.8rem; /* Encore un peu plus gros */
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+    filter: drop-shadow(0 0 8px rgba(255, 49, 49, 0.6));
+    z-index: 110;
+}
+
+/* Handwritten circle around the icon - using a custom marker-like border */
+.icon-link:has(.arsenal-mark)::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 4px solid #ff3131;
+    border-radius: 48% 52% 55% 45% / 45% 55% 45% 55%;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.6) rotate(-20deg);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+    filter: blur(0.4px);
+}
+
+.icon-link:hover .arsenal-mark {
+    opacity: 1;
+    animation: drawTextBottom 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.icon-link:hover::after {
+    opacity: 0.8;
+    transform: scale(1.2) rotate(8deg);
+    border-radius: 55% 45% 52% 48% / 48% 52% 48% 52%;
+}
+
+@keyframes drawTextBottom {
+    0% { clip-path: inset(-20px 100% -20px -20px); transform: translateX(-50%) rotate(-10deg) translateY(20px); }
+    100% { clip-path: inset(-20px -50px -20px -50px); transform: translateX(-50%) rotate(-10deg) translateY(0); }
 }
 
 .foot-hub {
